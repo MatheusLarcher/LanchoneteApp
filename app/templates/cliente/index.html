@@ -1,0 +1,93 @@
+{% extends 'cliente/base.html' %}
+
+{% block title %}Lanchonete App - Início{% endblock %}
+
+{% block content %}
+<div class="row mb-5">
+    <div class="col-md-12">
+        <div class="card text-white">
+            <img src="{{ url_for('static', filename='images/banner.jpg') }}" class="card-img hero-img" alt="Banner da Lanchonete" style="height: 300px; object-fit: cover;">
+            <div class="card-img-overlay d-flex flex-column justify-content-center text-center bg-dark bg-opacity-50">
+                <h1 class="card-title">Bem-vindo à Lanchonete App</h1>
+                <p class="card-text">Os melhores lanches e bebidas para satisfazer seu paladar!</p>
+                <div>
+                    <a href="{{ url_for('cliente.listar_categorias') }}" class="btn btn-primary">Ver Cardápio</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Destaques -->
+{% if destaques %}
+<section>
+    <h2 class="mb-4">Destaques do Cardápio</h2>
+    <div class="row">
+        {% for produto in destaques %}
+        <div class="col-md-3 mb-4">
+            <div class="card h-100">
+                <img src="{{ url_for('static', filename='produtos/' + produto.imagem) }}" class="card-img-top" alt="{{ produto.nome }}" style="height: 200px; object-fit: cover;">
+                <div class="card-body">
+                    <h5 class="card-title">{{ produto.nome }}</h5>
+                    <p class="card-text text-truncate">{{ produto.descricao }}</p>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span class="text-primary fw-bold">{{ produto.preco|format_currency }}</span>
+                        <a href="{{ url_for('cliente.detalhar_produto', produto_id=produto.id) }}" class="btn btn-sm btn-outline-primary">Ver detalhes</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    <div class="text-center mt-3">
+        <a href="{{ url_for('cliente.listar_categorias') }}" class="btn btn-primary">Ver todo o cardápio</a>
+    </div>
+</section>
+{% endif %}
+
+<!-- Categorias -->
+<section class="mt-5">
+    <h2 class="mb-4">Nossas Categorias</h2>
+    <div class="row">
+        {% for categoria in categorias %}
+        <div class="col-md-4 mb-4">
+            <div class="card h-100">
+                <div class="card-body">
+                    <h5 class="card-title">{{ categoria.nome }}</h5>
+                    <p class="card-text">{{ categoria.descricao }}</p>
+                    <a href="{{ url_for('cliente.produtos_por_categoria', categoria_id=categoria.id) }}" class="btn btn-outline-primary">Ver Produtos</a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</section>
+
+<!-- Como funciona -->
+<section class="mt-5">
+    <h2 class="mb-4">Como Funciona</h2>
+    <div class="row text-center">
+        <div class="col-md-4 mb-4">
+            <div class="bg-light p-4 rounded h-100">
+                <i class="fas fa-search fa-3x text-primary mb-3"></i>
+                <h4>Escolha</h4>
+                <p>Navegue pelo nosso cardápio e escolha seus produtos favoritos.</p>
+            </div>
+        </div>
+        <div class="col-md-4 mb-4">
+            <div class="bg-light p-4 rounded h-100">
+                <i class="fas fa-shopping-cart fa-3x text-primary mb-3"></i>
+                <h4>Peça</h4>
+                <p>Adicione os itens ao seu carrinho e finalize seu pedido.</p>
+            </div>
+        </div>
+        <div class="col-md-4 mb-4">
+            <div class="bg-light p-4 rounded h-100">
+                <i class="fas fa-utensils fa-3x text-primary mb-3"></i>
+                <h4>Desfrute</h4>
+                <p>Receba seu pedido e aproveite nossos deliciosos produtos.</p>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

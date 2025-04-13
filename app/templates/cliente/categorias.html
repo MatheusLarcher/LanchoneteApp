@@ -1,0 +1,41 @@
+{% extends 'cliente/base.html' %}
+
+{% block title %}Cardápio - Categorias{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col">
+        <h1>Cardápio</h1>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{{ url_for('cliente.index') }}">Início</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Categorias</li>
+            </ol>
+        </nav>
+    </div>
+</div>
+
+<div class="row">
+    {% for categoria in categorias %}
+    <div class="col-md-4 mb-4">
+        <div class="card h-100">
+            <div class="card-body">
+                <h2 class="card-title h4">{{ categoria.nome }}</h2>
+                <p class="card-text">{{ categoria.descricao }}</p>
+            </div>
+            <div class="card-footer bg-white">
+                <a href="{{ url_for('cliente.produtos_por_categoria', categoria_id=categoria.id) }}" class="btn btn-primary w-100">
+                    Ver Produtos
+                </a>
+            </div>
+        </div>
+    </div>
+    {% else %}
+    <div class="col-12">
+        <div class="alert alert-info">
+            Nenhuma categoria disponível no momento.
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

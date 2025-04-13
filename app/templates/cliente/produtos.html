@@ -1,0 +1,86 @@
+{% extends 'cliente/base.html' %}
+
+{% block title %}{{ categoria.nome }} - Produtos{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col">
+        <h1>{{ categoria.nome }}</h1>
+        <p class="lead">{{ categoria.descricao }}</p>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{{ url_for('cliente.index') }}">Início</a></li>
+                <li class="breadcrumb-item"><a href="{{ url_for('cliente.listar_categorias') }}">Categorias</a></li>
+                <li class="breadcrumb-item active" aria-current="page">{{ categoria.nome }}</li>
+            </ol>
+        </nav>
+    </div>
+</div>
+
+<!-- Filtros e busca -->
+<div class="row mb-4">
+    <div class="col-md-8">
+        <form action="{{ url_for('cliente.produtos_por_categoria', categoria_id=categoria.id) }}" method="get" class="row g-3">
+            <div class="col-md-6">
+                <div class="input-group">
+                    <input type="text" name="buscar" class="form-control" placeholder="Buscar produto..." value="{{ buscar or '' }}">
+                    <button class="btn btn-primary" type="submit">
+                        <i class="fas fa-search"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <select name="ordenar" class="form-select" onchange="this.form.submit()">
+                    <option value="">Ordenar por...</option>
+                    <option value="nome" {% if ordenar == 'nome' %}selected{% endif %}>Nome (A-Z)</option>
+                    <option value="preco" {% if ordenar == 'preco' %}selected{% endif %}>Menor Preço</option>
+                    <option value="preco_desc" {% if ordenar == 'preco_desc' %}selected{% endif %}>Maior Preço</option>
+                </select>
+            </div>
+        </form>
+    </div>
+    <div class="col-md-4 text-end">
+        {% if buscar or ordenar %}
+        <a href="{{ url_for('cliente.produtos_por_categoria', categoria_id=categoria.id) }}" class="btn btn-outline-secondary">
+            <i class="fas fa-times"></i> Limpar Filtros
+        </a>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Listagem de produtos -->
+<div class="row">
+    {% for produto in produtos %}
+    <div class="col-md-4 mb-4">
+        <div class="card h-100">
+            <img src="{{ url_for('static', filename='produtos/' + produto.imagem) }}" class="card-img-top" alt="{{ produto.nome }}" style="height: 200px; object-fit: cover;">
+            <div class="card-body">
+                <h5 class="card-title">{{ produto.nome }}</h5>
+                <p class="card-text text-truncate">{{ produto.descricao }}</p>
+                <div class="d-flex justify-content-between align-items-center">
+                    <span class="fw-bold text-primary">{{ produto.preco|format_currency }}</span>
+                    <a href="{{ url_for('cliente.detalhar_produto', produto_id=produto.id) }}" class="btn btn-sm btn-primary">Ver Detalhes</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% else %}
+    <div class="col-12">
+        <div class="alert alert-info">
+            {% if buscar %}
+                Nenhum produto encontrado para "{{ buscar }}".
+            {% else %}
+                Nenhum produto disponível nesta categoria no momento.
+            {% endif %}
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+<!-- Botão de voltar -->
+<div class="mt-4">
+    <a href="{{ url_for('cliente.listar_categorias') }}" class="btn btn-outline-secondary">
+        <i class="fas fa-arrow-left"></i> Voltar para categorias
+    </a>
+</div>
+{% endblock %}

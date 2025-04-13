@@ -1,0 +1,31 @@
+{% extends "cliente/base.html" %}
+{% block title %}Cardápio Digital{% endblock %}
+{% block content %}
+  <h2>Produtos em Destaque</h2>
+  <div class="row">
+    {% for prod in destaques %}
+      <div class="col-6 col-md-3 mb-4">
+        <div class="card h-100">
+          <img src="{{ url_for('static', filename='img/' ~ prod.imagem) }}" class="card-img-top" alt="{{ prod.nome }}">
+          <div class="card-body text-center">
+            <h5 class="card-title">{{ prod.nome }}</h5>
+            <p class="card-text">{{ prod.preco|currency("R$") }}</p>
+            <form action="{{ url_for('cliente.add_item', produto_id=prod.id) }}" method="post">
+              <button class="btn btn-primary">Adicionar</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+  <h2>Categorias</h2>
+  <div class="row">
+    {% for cat in categorias %}
+      <div class="col-6 col-md-3 mb-3">
+        <a href="{{ url_for('cliente.categoria', cat_id=cat.id) }}" class="text-decoration-none">
+          <div class="p-3 border text-center bg-light">{{ cat.nome }}</div>
+        </a>
+      </div>
+    {% endfor %}
+  </div>
+{% endblock %}

@@ -1,0 +1,183 @@
+{% extends 'cliente/base.html' %}
+
+{% block title %}Finalizar Pedido{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col">
+        <h1>Finalizar Pedido</h1>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{{ url_for('cliente.index') }}">Início</a></li>
+                <li class="breadcrumb-item"><a href="{{ url_for('cliente.ver_carrinho') }}">Carrinho</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Checkout</li>
+            </ol>
+        </nav>
+    </div>
+</div>
+
+<div class="row">
+    <!-- Formulário de Checkout -->
+    <div class="col-md-8">
+        <div class="card mb-4">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0">Dados para o Pedido</h5>
+            </div>
+            <div class="card-body">
+                <form action="{{ url_for('cliente.checkout') }}" method="post">
+                    <div class="mb-3">
+                        <label for="nome" class="form-label">Nome Completo *</label>
+                        <input type="text" class="form-control" id="nome" name="nome" value="{{ nome or '' }}" required>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="telefone" class="form-label">Telefone *</label>
+                        <input type="tel" class="form-control" id="telefone" name="telefone" value="{{ telefone or '' }}" 
+                               placeholder="(XX) XXXXX-XXXX" required>
+                        <div class="form-text">Formato: (XX) XXXXX-XXXX ou XXXXXXXXXXX</div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Tipo de Pedido *</label>
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="tipo_pedido" id="tipo_delivery" 
+                                           value="delivery" {% if tipo == 'delivery' %}checked{% endif %} required>
+                                    <label class="form-check-label" for="tipo_delivery">
+                                        <i class="fas fa-motorcycle me-2"></i> Delivery
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="tipo_pedido" id="tipo_retirada" 
+                                           value="retirada" {% if tipo == 'retirada' %}checked{% endif %} required>
+                                    <label class="form-check-label" for="tipo_retirada">
+                                        <i class="fas fa-shopping-bag me-2"></i> Retirada
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="tipo_pedido" id="tipo_local" 
+                                           value="local" {% if tipo == 'local' or not tipo %}checked{% endif %} required>
+                                    <label class="form-check-label" for="tipo_local">
+                                        <i class="fas fa-utensils me-2"></i> Consumo Local
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3" id="endereco-container">
+                        <label for="endereco" class="form-label">Endereço de Entrega <span id="endereco-obrigatorio" class="text-danger">*</span></label>
+                        <textarea class="form-control" id="endereco" name="endereco" rows="3">{{ endereco or '' }}</textarea>
+                        <div class="form-text">Informe o endereço completo com número, bairro, complemento e referências.</div>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label for="forma_pagamento" class="form-label">Forma de Pagamento *</label>
+                        <select class="form-select" id="forma_pagamento" name="forma_pagamento" required>
+                            <option value="">Selecione uma opção</option>
+                            {% for forma in formas_pag %}
+                                <option value="{{ forma.id }}" {% if forma_id and forma_id|int == forma.id %}selected{% endif %}>
+                                    {{ forma.nome }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-primary btn-lg">
+                            <i class="fas fa-check-circle me-2"></i> Confirmar Pedido
+                        </button>
+                        <a href="{{ url_for('cliente.ver_carrinho') }}" class="btn btn-outline-secondary">
+                            <i class="fas fa-arrow-left me-2"></i> Voltar ao Carrinho
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Resumo do Pedido -->
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0">Resumo do Pedido</h5>
+            </div>
+            <div class="card-body">
+                <ul class="list-group list-group-flush mb-3">
+                    {% for produto_id, item in carrinho.items() %}
+                    <li class="list-group-item d-flex justify-content-between lh-sm">
+                        <div>
+                            <h6 class="my-0">{{ item.nome }} ({{ item.quantidade }}x)</h6>
+                            {% if item.obs %}
+                                <small class="text-muted">{{ item.obs }}</small>
+                            {% endif %}
+                        </div>
+                        <span class="text-muted">{{ (item.preco_unit * item.quantidade)|format_currency }}</span>
+                    </li>
+                    {% endfor %}
+                    <li class="list-group-item d-flex justify-content-between">
+                        <span>Total</span>
+                        <strong class="text-primary">{{ total|format_currency }}</strong>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Controle de visibilidade do campo de endereço
+        const tipoDelivery = document.getElementById('tipo_delivery');
+        const tipoRetirada = document.getElementById('tipo_retirada');
+        const tipoLocal = document.getElementById('tipo_local');
+        const enderecoContainer = document.getElementById('endereco-container');
+        const enderecoInput = document.getElementById('endereco');
+        const enderecoObrigatorio = document.getElementById('endereco-obrigatorio');
+        
+        function toggleEnderecoVisibility() {
+            if (tipoDelivery.checked) {
+                enderecoContainer.style.display = 'block';
+                enderecoInput.required = true;
+                enderecoObrigatorio.style.display = 'inline';
+            } else {
+                enderecoContainer.style.display = 'none';
+                enderecoInput.required = false;
+                enderecoObrigatorio.style.display = 'none';
+            }
+        }
+        
+        // Inicializar o estado
+        toggleEnderecoVisibility();
+        
+        // Adicionar listeners para os radio buttons
+        tipoDelivery.addEventListener('change', toggleEnderecoVisibility);
+        tipoRetirada.addEventListener('change', toggleEnderecoVisibility);
+        tipoLocal.addEventListener('change', toggleEnderecoVisibility);
+        
+        // Formatação de telefone
+        const telefoneInput = document.getElementById('telefone');
+        telefoneInput.addEventListener('input', function(e) {
+            let value = e.target.value.replace(/\D/g, '');
+            
+            if (value.length <= 11) {
+                if (value.length > 2) {
+                    value = '(' + value.substring(0, 2) + ') ' + value.substring(2);
+                }
+                if (value.length > 10) {
+                    value = value.substring(0, 10) + '-' + value.substring(10);
+                }
+            }
+            
+            e.target.value = value;
+        });
+    });
+</script>
+{% endblock %}

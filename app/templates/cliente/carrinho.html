@@ -1,0 +1,137 @@
+{% extends 'cliente/base.html' %}
+
+{% block title %}Seu Carrinho{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col">
+        <h1>Seu Carrinho</h1>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{{ url_for('cliente.index') }}">Início</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Carrinho</li>
+            </ol>
+        </nav>
+    </div>
+</div>
+
+{% if carrinho %}
+    <form action="{{ url_for('cliente.atualizar_carrinho') }}" method="post">
+        <div class="table-responsive mb-4">
+            <table class="table table-hover">
+                <thead class="table-light">
+                    <tr>
+                        <th scope="col">Produto</th>
+                        <th scope="col">Preço</th>
+                        <th scope="col" class="text-center">Quantidade</th>
+                        <th scope="col" class="text-end">Subtotal</th>
+                        <th scope="col" class="text-center">Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for produto_id, item in carrinho.items() %}
+                    <tr>
+                        <td>
+                            <div>
+                                <h5 class="mb-1">{{ item.nome }}</h5>
+                                {% if item.obs %}
+                                    <small class="text-muted d-block">{{ item.obs }}</small>
+                                {% endif %}
+                                <div class="mt-2">
+                                    <label for="observacoes_{{ produto_id }}" class="form-label small">Observações:</label>
+                                    <textarea class="form-control form-control-sm" id="observacoes_{{ produto_id }}" name="observacoes_{{ produto_id }}" rows="2">{{ item.obs }}</textarea>
+                                </div>
+                            </div>
+                        </td>
+                        <td>{{ item.preco_unit|format_currency }}</td>
+                        <td class="text-center" style="width: 150px;">
+                            <div class="input-group input-group-sm">
+                                <button type="button" class="btn btn-outline-secondary diminuir-qtd" data-produto-id="{{ produto_id }}">
+                                    <i class="fas fa-minus"></i>
+                                </button>
+                                <input type="number" class="form-control text-center quantidade-input" 
+                                    id="quantidade_{{ produto_id }}" 
+                                    name="quantidade_{{ produto_id }}" 
+                                    value="{{ item.quantidade }}" 
+                                    min="1" required>
+                                <button type="button" class="btn btn-outline-secondary aumentar-qtd" data-produto-id="{{ produto_id }}">
+                                    <i class="fas fa-plus"></i>
+                                </button>
+                            </div>
+                        </td>
+                        <td class="text-end fw-bold">{{ (item.preco_unit * item.quantidade)|format_currency }}</td>
+                        <td class="text-center">
+                            <a href="{{ url_for('cliente.remover_item_carrinho', produto_id=produto_id) }}" class="btn btn-sm btn-danger">
+                                <i class="fas fa-trash"></i>
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <td colspan="3" class="text-end fw-bold">Total:</td>
+                        <td class="text-end fw-bold fs-5 text-primary">{{ total|format_currency }}</td>
+                        <td></td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+
+        <div class="row">
+            <div class="col-md-6">
+                <a href="{{ url_for('cliente.listar_categorias') }}" class="btn btn-outline-secondary">
+                    <i class="fas fa-arrow-left me-2"></i> Continuar Comprando
+                </a>
+                <button type="submit" class="btn btn-success ms-2">
+                    <i class="fas fa-sync-alt me-2"></i> Atualizar Carrinho
+                </button>
+            </div>
+            <div class="col-md-6 text-end">
+                <a href="{{ url_for('cliente.checkout') }}" class="btn btn-primary">
+                    Finalizar Pedido <i class="fas fa-arrow-right ms-2"></i>
+                </a>
+            </div>
+        </div>
+    </form>
+
+{% else %}
+    <div class="text-center py-5">
+        <div class="mb-4">
+            <i class="fas fa-shopping-cart fa-5x text-muted"></i>
+        </div>
+        <h2>Seu carrinho está vazio</h2>
+        <p class="lead">Adicione produtos ao seu carrinho para continuar.</p>
+        <a href="{{ url_for('cliente.listar_categorias') }}" class="btn btn-primary mt-3">
+            Ver Cardápio
+        </a>
+    </div>
+{% endif %}
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Botões de aumentar e diminuir quantidade
+        document.querySelectorAll('.diminuir-qtd').forEach(function(btn) {
+            btn.addEventListener('click', function() {
+                const produtoId = this.getAttribute('data-produto-id');
+                const inputQtd = document.getElementById('quantidade_' + produtoId);
+                const currentValue = parseInt(inputQtd.value);
+                if (currentValue > 1) {
+                    inputQtd.value = currentValue - 1;
+                }
+            });
+        });
+
+        document.querySelectorAll('.aumentar-qtd').forEach(function(btn) {
+            btn.addEventListener('click', function() {
+                const produtoId = this.getAttribute('data-produto-id');
+                const inputQtd = document.getElementById('quantidade_' + produtoId);
+                const currentValue = parseInt(inputQtd.value);
+                inputQtd.value = currentValue + 1;
+            });
+        });
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,32 @@
+{% extends "cliente/base.html" %}
+{% block title %}Meu Carrinho{% endblock %}
+{% block content %}
+  <h2>Carrinho de Compras</h2>
+  {% if carrinho %}
+    <div class="table-responsive">
+      <table class="table align-middle">
+        <thead><tr><th>Produto</th><th>Preço</th><th>Qtd</th><th>Total</th><th></th></tr></thead>
+        <tbody>
+          {% for pid, item in carrinho.items() %}
+          <tr>
+            <td>{{ item.nome }}</td>
+            <td>R$ {{ item.preco|floatformat(2) }}</td>
+            <td>{{ item.quantidade }}</td>
+            <td>R$ {{ (item.preco * item.quantidade)|floatformat(2) }}</td>
+            <td>
+              <a href="{{ url_for('cliente.remover_item', produto_id=pid) }}" class="text-danger">Remover</a>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    <h4 class="text-end">Subtotal: R$ {{ subtotal|floatformat(2) }}</h4>
+    <div class="text-end">
+      <a href="{{ url_for('cliente.index') }}" class="btn btn-secondary">Continuar comprando</a>
+      <a href="{{ url_for('cliente.checkout') }}" class="btn btn-success">Finalizar Pedido</a>
+    </div>
+  {% else %}
+    <p>Seu carrinho está vazio.</p>
+  {% endif %}
+{% endblock %}

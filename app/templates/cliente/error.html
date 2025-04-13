@@ -1,0 +1,32 @@
+{% extends 'cliente/base.html' %}
+
+{% block title %}Erro {{ code }}{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center py-5">
+    <div class="col-md-8 text-center">
+        <div class="mb-4">
+            {% if code == 404 %}
+                <i class="fas fa-map-signs fa-7x text-warning"></i>
+            {% else %}
+                <i class="fas fa-exclamation-triangle fa-7x text-danger"></i>
+            {% endif %}
+        </div>
+        
+        <h1 class="display-4 mb-4">{{ code }}</h1>
+        <h2 class="mb-4">{{ error }}</h2>
+        
+        {% if code == 404 %}
+            <p class="lead mb-5">A página que você está procurando não foi encontrada.</p>
+        {% else %}
+            <p class="lead mb-5">Ocorreu um erro ao processar sua solicitação.</p>
+        {% endif %}
+        
+        <div>
+            <a href="{{ url_for('cliente.index') }}" class="btn btn-primary btn-lg">
+                <i class="fas fa-home me-2"></i> Voltar para Página Inicial
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,215 @@
+{% extends 'cliente/base.html' %}
+
+{% block title %}Acompanhar Pedido #{{ pedido.id }}{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col">
+        <h1>Acompanhar Pedido #{{ pedido.id }}</h1>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{{ url_for('cliente.index') }}">Início</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Acompanhar Pedido</li>
+            </ol>
+        </nav>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <!-- Status do Pedido -->
+        <div class="card mb-4">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0">Status Atual</h5>
+            </div>
+            <div class="card-body">
+                <div class="text-center py-3">
+                    {% if pedido.status.value == 'pendente' %}
+                        <i class="fas fa-clock fa-5x text-warning mb-3"></i>
+                        <h3>Pedido Recebido</h3>
+                        <p class="lead">Aguardando confirmação do restaurante.</p>
+                    {% elif pedido.status.value == 'confirmado' %}
+                        <i class="fas fa-check-circle fa-5x text-success mb-3"></i>
+                        <h3>Pedido Confirmado</h3>
+                        <p class="lead">Seu pedido foi confirmado e será preparado em breve.</p>
+                    {% elif pedido.status.value == 'em_preparo' %}
+                        <i class="fas fa-utensils fa-5x text-primary mb-3"></i>
+                        <h3>Em Preparo</h3>
+                        <p class="lead">Nossos chefs estão preparando seu pedido com todo cuidado.</p>
+                    {% elif pedido.status.value == 'pronto' %}
+                        <i class="fas fa-thumbs-up fa-5x text-success mb-3"></i>
+                        <h3>Pedido Pronto</h3>
+                        {% if pedido.tipo.value == 'delivery' %}
+                            <p class="lead">Seu pedido está pronto e saindo para entrega.</p>
+                        {% elif pedido.tipo.value == 'retirada' %}
+                            <p class="lead">Seu pedido está pronto para retirada.</p>
+                        {% else %}
+                            <p class="lead">Seu pedido está pronto e será servido em instantes.</p>
+                        {% endif %}
+                    {% elif pedido.status.value == 'entregue' %}
+                        <i class="fas fa-check-double fa-5x text-success mb-3"></i>
+                        <h3>Pedido Entregue</h3>
+                        <p class="lead">Seu pedido foi entregue com sucesso. Bom apetite!</p>
+                    {% elif pedido.status.value == 'cancelado' %}
+                        <i class="fas fa-times-circle fa-5x text-danger mb-3"></i>
+                        <h3>Pedido Cancelado</h3>
+                        <p class="lead">Seu pedido foi cancelado. Entre em contato conosco para mais informações.</p>
+                    {% endif %}
+                </div>
+
+                <!-- Barra de progresso -->
+                {% if pedido.status.value != 'cancelado' %}
+                <div class="progress-tracker mt-4">
+                    <div class="progress" style="height: 5px;">
+                        {% set progress = {
+                            'pendente': 20,
+                            'confirmado': 40,
+                            'em_preparo': 60,
+                            'pronto': 80,
+                            'entregue': 100
+                        } %}
+                        <div class="progress-bar bg-success" role="progressbar" 
+                             style="width: {{ progress[pedido.status.value] }}%;" 
+                             aria-valuenow="{{ progress[pedido.status.value] }}" 
+                             aria-valuemin="0" aria-valuemax="100"></div>
+                    </div>
+                    
+                    <div class="d-flex justify-content-between mt-2">
+                        <div class="text-center">
+                            <div class="rounded-circle {{ 'bg-success text-white' if progress[pedido.status.value] >= 20 else 'bg-light' }}" 
+                                 style="width: 30px; height: 30px; display: inline-flex; align-items: center; justify-content: center;">
+                                <i class="fas fa-check"></i>
+                            </div>
+                            <div class="mt-1 small">Recebido</div>
+                        </div>
+                        <div class="text-center">
+                            <div class="rounded-circle {{ 'bg-success text-white' if progress[pedido.status.value] >= 40 else 'bg-light' }}" 
+                                 style="width: 30px; height: 30px; display: inline-flex; align-items: center; justify-content: center;">
+                                <i class="fas fa-check"></i>
+                            </div>
+                            <div class="mt-1 small">Confirmado</div>
+                        </div>
+                        <div class="text-center">
+                            <div class="rounded-circle {{ 'bg-success text-white' if progress[pedido.status.value] >= 60 else 'bg-light' }}" 
+                                 style="width: 30px; height: 30px; display: inline-flex; align-items: center; justify-content: center;">
+                                <i class="fas fa-check"></i>
+                            </div>
+                            <div class="mt-1 small">Preparando</div>
+                        </div>
+                        <div class="text-center">
+                            <div class="rounded-circle {{ 'bg-success text-white' if progress[pedido.status.value] >= 80 else 'bg-light' }}" 
+                                 style="width: 30px; height: 30px; display: inline-flex; align-items: center; justify-content: center;">
+                                <i class="fas fa-check"></i>
+                            </div>
+                            <div class="mt-1 small">Pronto</div>
+                        </div>
+                        <div class="text-center">
+                            <div class="rounded-circle {{ 'bg-success text-white' if progress[pedido.status.value] >= 100 else 'bg-light' }}" 
+                                 style="width: 30px; height: 30px; display: inline-flex; align-items: center; justify-content: center;">
+                                <i class="fas fa-check"></i>
+                            </div>
+                            <div class="mt-1 small">Entregue</div>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+                
+                <div class="text-center mt-4">
+                    <p class="text-muted">
+                        <i class="fas fa-sync-alt me-2"></i> Esta página será atualizada automaticamente a cada 30 segundos.
+                        <br>Atualização manual: <a href="javascript:location.reload()">Clique aqui</a>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <!-- Detalhes do Pedido -->
+        <div class="card mb-4">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0">Detalhes do Pedido</h5>
+            </div>
+            <div class="card-body">
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item d-flex justify-content-between">
+                        <span>Número do Pedido:</span>
+                        <strong>#{{ pedido.id }}</strong>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between">
+                        <span>Data e Hora:</span>
+                        <span>{{ pedido.data_hora.strftime('%d/%m/%Y %H:%M') }}</span>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between">
+                        <span>Cliente:</span>
+                        <span>{{ pedido.nome_cliente }}</span>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between">
+                        <span>Telefone:</span>
+                        <span>{{ pedido.telefone }}</span>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between">
+                        <span>Tipo de Pedido:</span>
+                        <span>{{ pedido.tipo.value|capitalize() }}</span>
+                    </li>
+                    {% if pedido.tipo.value == 'delivery' and pedido.endereco %}
+                    <li class="list-group-item">
+                        <div><strong>Endereço de Entrega:</strong></div>
+                        <div>{{ pedido.endereco }}</div>
+                    </li>
+                    {% endif %}
+                    {% if pedido.forma_pagamento %}
+                    <li class="list-group-item d-flex justify-content-between">
+                        <span>Forma de Pagamento:</span>
+                        <span>{{ pedido.forma_pagamento.nome }}</span>
+                    </li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+        
+        <!-- Itens do Pedido -->
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0">Itens do Pedido</h5>
+            </div>
+            <div class="card-body p-0">
+                <ul class="list-group list-group-flush">
+                    {% for item in pedido.itens %}
+                    <li class="list-group-item">
+                        <div class="d-flex justify-content-between">
+                            <span>{{ item.quantidade }}x {{ item.produto.nome }}</span>
+                            <span>{{ item.subtotal|format_currency }}</span>
+                        </div>
+                        {% if item.observacoes %}
+                        <small class="text-muted">{{ item.observacoes }}</small>
+                        {% endif %}
+                    </li>
+                    {% endfor %}
+                    <li class="list-group-item d-flex justify-content-between fw-bold">
+                        <span>Total:</span>
+                        <span class="text-primary">{{ pedido.total|format_currency }}</span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col text-center">
+        <a href="{{ url_for('cliente.index') }}" class="btn btn-outline-secondary">
+            <i class="fas fa-home me-2"></i> Voltar para Página Inicial
+        </a>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Auto-refresh da página a cada 30 segundos
+    setTimeout(function() {
+        location.reload();
+    }, 30000);
+</script>
+{% endblock %}

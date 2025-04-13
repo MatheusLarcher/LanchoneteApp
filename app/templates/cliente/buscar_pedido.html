@@ -1,0 +1,66 @@
+{% extends 'cliente/base.html' %}
+
+{% block title %}Buscar Pedido{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0">Buscar Pedido</h5>
+            </div>
+            <div class="card-body">
+                <p class="card-text mb-4">
+                    Informe o número do pedido e o telefone utilizado para acompanhar o status do seu pedido.
+                </p>
+                
+                <form method="post" action="{{ url_for('cliente.buscar_pedido') }}">
+                    <div class="mb-3">
+                        <label for="numero_pedido" class="form-label">Número do Pedido</label>
+                        <input type="number" class="form-control" id="numero_pedido" name="numero_pedido" required>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label for="telefone" class="form-label">Telefone</label>
+                        <input type="tel" class="form-control" id="telefone" name="telefone" placeholder="(XX) XXXXX-XXXX" required>
+                        <div class="form-text">Utilize o mesmo telefone informado no pedido.</div>
+                    </div>
+                    
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-search me-2"></i> Buscar Pedido
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+        <div class="text-center mt-4">
+            <a href="{{ url_for('cliente.index') }}" class="btn btn-outline-secondary">
+                <i class="fas fa-arrow-left me-2"></i> Voltar para a Página Inicial
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Formatação do campo de telefone
+    const telefoneInput = document.getElementById('telefone');
+    telefoneInput.addEventListener('input', function(e) {
+        let value = e.target.value.replace(/\D/g, '');
+        
+        if (value.length <= 11) {
+            if (value.length > 2) {
+                value = '(' + value.substring(0, 2) + ') ' + value.substring(2);
+            }
+            if (value.length > 10) {
+                value = value.substring(0, 10) + '-' + value.substring(10);
+            }
+        }
+        
+        e.target.value = value;
+    });
+</script>
+{% endblock %}

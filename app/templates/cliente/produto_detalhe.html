@@ -1,0 +1,95 @@
+{% extends 'cliente/base.html' %}
+
+{% block title %}{{ produto.nome }} - Detalhes{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{{ url_for('cliente.index') }}">Início</a></li>
+                <li class="breadcrumb-item"><a href="{{ url_for('cliente.listar_categorias') }}">Categorias</a></li>
+                <li class="breadcrumb-item">
+                    <a href="{{ url_for('cliente.produtos_por_categoria', categoria_id=produto.categoria_id) }}">
+                        {{ produto.categoria.nome }}
+                    </a>
+                </li>
+                <li class="breadcrumb-item active" aria-current="page">{{ produto.nome }}</li>
+            </ol>
+        </nav>
+    </div>
+</div>
+
+<div class="row">
+    <!-- Imagem do produto -->
+    <div class="col-md-6 mb-4">
+        <div class="card">
+            <img src="{{ url_for('static', filename='produtos/' + produto.imagem) }}" class="img-fluid rounded" alt="{{ produto.nome }}">
+        </div>
+    </div>
+    
+    <!-- Detalhes e formulário de adição ao carrinho -->
+    <div class="col-md-6">
+        <h1 class="mb-3">{{ produto.nome }}</h1>
+        <p class="lead">{{ produto.descricao }}</p>
+        
+        <div class="mb-4">
+            <h2 class="text-primary fs-2 fw-bold">{{ produto.preco|format_currency }}</h2>
+        </div>
+        
+        <form action="{{ url_for('cliente.adicionar_carrinho', produto_id=produto.id) }}" method="post">
+            <div class="mb-3">
+                <label for="quantidade" class="form-label">Quantidade:</label>
+                <div class="input-group">
+                    <button type="button" class="btn btn-outline-secondary" id="diminuir-qtd">
+                        <i class="fas fa-minus"></i>
+                    </button>
+                    <input type="number" class="form-control text-center" id="quantidade" name="quantidade" value="1" min="1" required>
+                    <button type="button" class="btn btn-outline-secondary" id="aumentar-qtd">
+                        <i class="fas fa-plus"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <div class="mb-4">
+                <label for="observacoes" class="form-label">Observações:</label>
+                <textarea class="form-control" id="observacoes" name="observacoes" rows="3" placeholder="Ex: Sem cebola, molho extra, etc."></textarea>
+            </div>
+            
+            <div class="d-grid gap-2">
+                <button type="submit" class="btn btn-primary btn-lg">
+                    <i class="fas fa-cart-plus me-2"></i> Adicionar ao Carrinho
+                </button>
+            </div>
+        </form>
+        
+        <div class="mt-4">
+            <a href="{{ url_for('cliente.produtos_por_categoria', categoria_id=produto.categoria_id) }}" class="btn btn-outline-secondary">
+                <i class="fas fa-arrow-left me-2"></i> Voltar
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const qtdInput = document.getElementById('quantidade');
+        const btnDiminuir = document.getElementById('diminuir-qtd');
+        const btnAumentar = document.getElementById('aumentar-qtd');
+        
+        btnDiminuir.addEventListener('click', function() {
+            const currentValue = parseInt(qtdInput.value);
+            if (currentValue > 1) {
+                qtdInput.value = currentValue - 1;
+            }
+        });
+        
+        btnAumentar.addEventListener('click', function() {
+            const currentValue = parseInt(qtdInput.value);
+            qtdInput.value = currentValue + 1;
+        });
+    });
+</script>
+{% endblock %}

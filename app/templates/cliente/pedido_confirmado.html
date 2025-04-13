@@ -1,0 +1,87 @@
+{% extends 'cliente/base.html' %}
+
+{% block title %}Pedido Confirmado{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card text-center">
+            <div class="card-body py-5">
+                <div class="mb-4">
+                    <i class="fas fa-check-circle text-success fa-5x"></i>
+                </div>
+                <h1 class="card-title mb-4">Pedido Confirmado!</h1>
+                <p class="card-text fs-4 mb-3">
+                    Seu pedido #{{ pedido.id }} foi registrado com sucesso.
+                </p>
+                
+                <div class="alert alert-info mb-4">
+                    {% if pedido.tipo.value == 'delivery' %}
+                        <p class="mb-0">Seu pedido será entregue no endereço informado em breve.</p>
+                    {% elif pedido.tipo.value == 'retirada' %}
+                        <p class="mb-0">Seu pedido estará disponível para retirada em aproximadamente 20 minutos.</p>
+                    {% else %}
+                        <p class="mb-0">Seu pedido será servido na sua mesa em breve.</p>
+                    {% endif %}
+                </div>
+                
+                <div class="mb-4">
+                    <h4>Detalhes do Pedido</h4>
+                    <p><strong>Nome:</strong> {{ pedido.nome_cliente }}</p>
+                    <p><strong>Telefone:</strong> {{ pedido.telefone }}</p>
+                    <p><strong>Tipo:</strong> {{ pedido.tipo.value|capitalize() }}</p>
+                    {% if pedido.endereco %}
+                        <p><strong>Endereço:</strong> {{ pedido.endereco }}</p>
+                    {% endif %}
+                    <p><strong>Data e Hora:</strong> {{ pedido.data_hora.strftime('%d/%m/%Y %H:%M') }}</p>
+                    <p><strong>Status:</strong> {{ pedido.status.value|capitalize() }}</p>
+                </div>
+                
+                <h4 class="mb-3">Itens do Pedido</h4>
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Produto</th>
+                                <th>Quantidade</th>
+                                <th>Preço Unit.</th>
+                                <th>Subtotal</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in pedido.itens %}
+                            <tr>
+                                <td>
+                                    {{ item.produto.nome }}
+                                    {% if item.observacoes %}
+                                        <br><small class="text-muted">{{ item.observacoes }}</small>
+                                    {% endif %}
+                                </td>
+                                <td>{{ item.quantidade }}</td>
+                                <td>{{ item.preco_unitario|format_currency }}</td>
+                                <td>{{ item.subtotal|format_currency }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <td colspan="3" class="text-end fw-bold">Total:</td>
+                                <td class="fw-bold">{{ pedido.total|format_currency }}</td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+                
+                <div class="mt-5">
+                    <a href="{{ url_for('cliente.acompanhar_pedido', pedido_id=pedido.id) }}" class="btn btn-primary btn-lg me-2">
+                        <i class="fas fa-eye me-2"></i> Acompanhar Pedido
+                    </a>
+                    <a href="{{ url_for('cliente.index') }}" class="btn btn-outline-secondary btn-lg">
+                        <i class="fas fa-home me-2"></i> Voltar à Página Inicial
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,27 @@
+{% extends "cliente/base.html" %}
+{% block title %}Checkout{% endblock %}
+{% block content %}
+  <h2>Finalizar Pedido</h2>
+  <form action="{{ url_for('cliente.checkout') }}" method="post">
+    <div class="mb-3">
+      <label for="nome" class="form-label">Seu Nome:</label>
+      <input type="text" name="nome" id="nome" class="form-control" required>
+    </div>
+    <div class="mb-3">
+      <label for="contato" class="form-label">Telefone/WhatsApp:</label>
+      <input type="tel" name="contato" id="contato" class="form-control" required>
+    </div>
+    <div class="mb-3">
+      <label class="form-label">Forma de Pagamento:</label><br>
+      {% for forma in formas %}
+        <div class="form-check form-check-inline">
+          <input class="form-check-input" type="radio" name="forma_pagamento" id="fp{{ forma.id }}" value="{{ forma.id }}" {% if loop.first %}checked{% endif %}>
+          <label class="form-check-label" for="fp{{ forma.id }}">{{ forma.nome }}</label>
+        </div>
+      {% endfor %}
+    </div>
+    <!-- Resumo do pedido -->
+    <p><strong>Total a pagar:</strong> R$ {{ subtotal|floatformat(2) }}</p>
+    <button type="submit" class="btn btn-success">Confirmar Pedido</button>
+  </form>
+{% endblock %}

@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lanchonete XYZ - {% block title %}{% endblock %}</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  <!-- Bootstrap CSS -->
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/5.3.0/css/bootstrap.min.css">
+</head>
+<body>
+  <header class="bg-dark text-white p-3">
+    <div class="container">
+      <h1 class="h3">Lanchonete XYZ</h1>
+      <nav><!-- menu de navegação --></nav>
+    </div>
+  </header>
+  <main class="container my-4">
+    {% block content %}{% endblock %}
+  </main>
+  <footer class="bg-light text-center p-2">
+    <small>© 2025 Lanchonete XYZ</small>
+  </footer>
+  <!-- Bootstrap JS bundle -->
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+  <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+</body>
+</html>
