@@ -115,10 +115,10 @@ Um aplicativo web para o módulo cliente de uma lanchonete, desenvolvido com Fla
 Para contribuir com o projeto:
 
 1. Crie um fork do repositório
-2. Clone seu fork: `git clone https://github.com/seu-usuario/lanchonete-app.git`
-3. Crie uma branch para sua feature: `git checkout -b minha-feature`
+2. Clone seu fork: `git clone https://github.com/MatheusLarcher/lanchonete-app.git`
+3. Crie uma branch para sua feature: `git checkout -b MatheusLarcher`
 4. Faça suas alterações e commit: `git commit -m 'Minha nova feature'`
-5. Envie para o GitHub: `git push origin minha-feature`
+5. Envie para o GitHub: `git push origin MatheusLarcher`
 6. Crie um Pull Request
 
 ## Licença
@@ -127,4 +127,4 @@ Este projeto está licenciado sob a licença MIT - veja o arquivo LICENSE para d
 
 ## Contato
 
-Para dúvidas ou sugestões, entre em contato através do email: contato@lanchoneteapp.com
+Para dúvidas ou sugestões, entre em contato através do email: matheuslarcher20@gmail.com
